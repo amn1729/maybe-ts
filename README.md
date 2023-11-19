@@ -2,7 +2,7 @@
 Inspired by Haskell's Maybe and Rust's Option type
 
 ## Types and functions
-### type Just<T>
+### type Just`<T>`
   - value: T
   - _type: "just"
 
