@@ -9,7 +9,7 @@ Inspired by Haskell's Maybe and Rust's Option type
 ### type Nothing
   - _type: "nothing"
 
-### type Maybe<T>
+### type Maybe`<T>`
   - value: Just<T> | Nothing
   - run: RunOnMaybe<T>
   - get: GetOnMaybe<T>
