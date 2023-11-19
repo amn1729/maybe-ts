@@ -18,6 +18,7 @@ export type Maybe<T> = {
   run: RunOnMaybe<T>;
   get: GetOnMaybe<T>;
   unwrap: () => T;
+  unwrapExpect: (msg: string) => T;
   unwrapOr: (fallback: T) => T;
   isJust: () => boolean;
   isNothing: () => boolean;
@@ -44,6 +45,10 @@ export function toMaybe<T>(val?: T | undefined | null): Maybe<T> {
     unwrap: () => {
       if (isJust) return value.value;
       throw Error("No value to unwrap");
+    },
+    unwrapExpect: (msg: string) => {
+      if (isJust) return value.value;
+      throw Error(msg);
     },
     unwrapOr: (fallback: T) => (isJust ? value.value : fallback),
     isJust: () => isJust,
