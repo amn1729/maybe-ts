@@ -1,5 +1,5 @@
 # Maybe monad for TS
-Inspired by Haskell's Maybe and Rust's Option type
+Inspired from Haskell's Maybe and Rust's Option type
 
 ## Types and functions
 ### type Just`<T>`
