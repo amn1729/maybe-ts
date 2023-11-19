@@ -1,6 +1,9 @@
 # Maybe monad for TS
 Inspired from Haskell's Maybe and Rust's Option type
 
+## Upstream URL
+https://codeberg.org/anhsirk0/maybe-ts
+
 ## Types and functions
 ### type Just`<T>`
   - value: T
@@ -19,10 +22,10 @@ Inspired from Haskell's Maybe and Rust's Option type
   - isJust: () => boolean
   - isNothing: () => boolean
 
-#### Maybe.value
+### Maybe.value
 can be `Just<T>` or `Nothing`
 
-#### Maybe.run `<U>(fn: (val: T) => U) => Maybe<NonNullable<U>>`
+### Maybe.run `<U>(fn: (val: T) => U) => Maybe<NonNullable<U>>`
 run / transform function on Maybe  
 A function to run on the `value` of the `Maybe`  
 Returns Maybe of the returned value type from the function
@@ -35,7 +38,7 @@ let finalAge: Maybe<number> = benWithDoubleAge.run(b => b.age);
 let finalAgeValue: number = finalAge.unwrapOr(0); //=> 20 or 0;
 ```
 
-#### Maybe.get `<U extends NonNullable<T[K]>, K extends keyof T>(key: K) => Maybe<U>`
+### Maybe.get `<U extends NonNullable<T[K]>, K extends keyof T>(key: K) => Maybe<U>`
 get function on Maybe (for the Record type)  
 get a Property of the `value` of `Maybe`  
 Returns Maybe of the returned prop type of the key
@@ -48,22 +51,22 @@ let finalAge: Maybe<number> = benWithDoubleAge.get("age");
 let finalAgeValue: number = finalAge.unwrapOr(0); //=> 20 or 0;
 ```
 
-#### Maybe.unwrap `() => T`
+### Maybe.unwrap `() => T`
 unwrap the value of the `Maybe`  
 throws Error if the Maybe is of type Nothing (no value to unwrap)
 
-#### Maybe.unwrapExpect `(msg: string) => T`
+### Maybe.unwrapExpect `(msg: string) => T`
 unwrap the value of the `Maybe`  
 throws Error with provided `msg` if the Maybe is of type Nothing (no value to unwrap)
 
-#### Maybe.unwrapOr `(fallback: T) => T`
+### Maybe.unwrapOr `(fallback: T) => T`
 unwrap the value of the `Maybe` also providing a fallback value  
 Returns fallback value if there is no value to unwrap
 
-#### Maybe.isJust `() => boolean`
+### Maybe.isJust `() => boolean`
 Returns `true` if `Maybe.value` is of type `Just`
 
-#### Maybe.isNothing `() => boolean`
+### Maybe.isNothing `() => boolean`
 Returns `true` if `Maybe.value` is of type `Nothing`
 
 ### toMaybe `<T>(val?: T | undefined | null) => Maybe<T>`
@@ -98,7 +101,7 @@ emailDomain.isNothing() //=> true;
 
 let email: Email = { usermail: "stew", domain: "griffins.com" };
 let stewie: Maybe<User> = toMaybe<User>({ name: "Stewie Griffin", info: { email } });
-emailDomain: Maybe<string> = peter.get("info").get("email").get("domain");
+emailDomain: Maybe<string> = stewie.get("info").get("email").get("domain");
 emailDomain.isJust() //=> true;
 emailDomain.unwrap() //=> "griffins.com"
 ```
