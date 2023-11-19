@@ -10,9 +10,9 @@ Inspired from Haskell's Maybe and Rust's Option type
   - _type: "nothing"
 
 ### type Maybe`<T>`
-  - value: Just<T> | Nothing
-  - run: RunOnMaybe<T>
-  - get: GetOnMaybe<T>
+  - value: Just`<T>` | Nothing
+  - run: RunOnMaybe`<T>`
+  - get: GetOnMaybe`<T>`
   - unwrap: () => T
   - unwrapExpect: (msg: string) => T
   - unwrapOr: (fallback: T) => T
@@ -70,8 +70,8 @@ Returns `true` if `Maybe.value` is of type `Nothing`
 Returns the `Maybe` of type `T`  
 Example: 
 ```ts
-let num: Maybe<number> = toMaybe<number>(); // Maybe of type Nothing;
-let num2: Maybe<number> = toMaybe<number>(1); // Maybe of type Just(1);
+let num: Maybe<number> = toMaybe<number>(); // Maybe of variant Nothing;
+let num2: Maybe<number> = toMaybe<number>(1); // Maybe of variant Just(1);
 let arrayOfNums: Array<number> = [1, 2, 3];
 let numAtIndex4: Maybe<number> = toMaybe(arrayOfNums.at(4));
 ```
