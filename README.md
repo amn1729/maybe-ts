@@ -75,3 +75,30 @@ let num2: Maybe<number> = toMaybe<number>(1); // Maybe of variant Just(1);
 let arrayOfNums: Array<number> = [1, 2, 3];
 let numAtIndex4: Maybe<number> = toMaybe(arrayOfNums.at(4));
 ```
+
+
+### handling optional props
+```ts
+type User = { name: string; age: number; address?: string };
+let ben: Maybe<User> = toMaybe<User>({ name: "Ben" age: 10 });
+let address: Maybe<string> = ben.get("address");
+// let addressValue: string = address.unwrap(); //=> throws Error("No value to unwrap");
+let addressValue: string = address.unwrapOr("Not found"); //=> "Not found"
+```
+
+### getting deeply nested props
+```ts
+type Email = { usermail: string; domain: string };
+type Info = { phone?: number; email?: Email }
+type User = { name: string; info?: Info };
+
+let peter: Maybe<User> = toMaybe<User>({ name: "Peter Griffin" }); // No info
+let emailDomain: Maybe<string> = peter.get("info").get("email").get("domain");
+emailDomain.isNothing() //=> true;
+
+let email: Email = { usermail: "stew", domain: "griffins.com" };
+let stewie: Maybe<User> = toMaybe<User>({ name: "Stewie Griffin", info: { email } });
+emailDomain: Maybe<string> = peter.get("info").get("email").get("domain");
+emailDomain.isJust() //=> true;
+emailDomain.unwrap() //=> "griffins.com"
+```
