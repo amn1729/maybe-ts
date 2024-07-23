@@ -1,59 +1,57 @@
-export type Just<T> = { value: T; _type: "just" };
-export type Nothing = { _type: "nothing" };
+// import { ReactElement, Fragment, createElement } from "react";
 
-function toJust<T>(value: T): Just<T> {
-  return { value: value, _type: "just" };
+export type Just<T> = { value: T; _t: "just" };
+export type Nothing = { _t: "nothing" };
+
+export class Maybe<T> {
+  private data: Just<T> | Nothing;
+
+  constructor(value?: T) {
+    this.data = value === undefined ? { _t: "nothing" } : { value, _t: "just" };
+  }
+
+  get isJust() {
+    return this.data._t === "just";
+  }
+
+  get isNothing() {
+    return this.data._t === "nothing";
+  }
+
+  run<U>(fn: (val: T) => U): Maybe<NonNullable<U>> {
+    if (this.isJust)
+      return new Maybe(fn((this.data as Just<T>).value) as NonNullable<U>);
+    return new Maybe<NonNullable<U>>();
+  }
+
+  prop<U extends NonNullable<T[K]>, K extends keyof T = keyof T>(key: K) {
+    return this.run<U>((v) => v[key] as U);
+  }
+
+  get(msg?: string): T {
+    if (this.isJust) return (this.data as Just<T>).value;
+    throw Error(msg ?? "No value to get");
+  }
+
+  getOr(fallback: T): T {
+    return this.isJust ? (this.data as Just<T>).value : fallback;
+  }
+
+  getOrUndef(): T | undefined {
+    return this.isJust ? (this.data as Just<T>).value : undefined;
+  }
+
+  or(otherMaybe: Maybe<T>) {
+    return this.isJust ? this : otherMaybe;
+  }
+
+  // Render(fn: (val: T) => ReactElement): ReactElement {
+  //   return this.isJust
+  //     ? fn((this.data as Just<T>).value)
+  //     : createElement(Fragment);
+  // }
 }
 
-const nothing: Nothing = { _type: "nothing" };
-
-type GetOnMaybe<T> = <U extends NonNullable<T[K]>, K extends keyof T>(
-  key: K
-) => Maybe<U>;
-
-type RunOnMaybe<T> = <U>(fn: (val: T) => U) => Maybe<NonNullable<U>>;
-
-export type Maybe<T> = {
-  value: Just<T> | Nothing;
-  run: RunOnMaybe<T>;
-  get: GetOnMaybe<T>;
-  unwrap: () => T;
-  unwrapExpect: (msg: string) => T;
-  unwrapOr: (fallback: T) => T;
-  unwrapUndef: () => T | undefined;
-  isJust: () => boolean;
-  isNothing: () => boolean;
-};
-
-function run<T, U>(
-  value: Maybe<T>["value"],
-  fn: (val: T) => U
-): Maybe<NonNullable<U>> {
-  if (value._type === "nothing") return toMaybe<NonNullable<U>>(undefined);
-  return toMaybe<NonNullable<U>>(fn(value.value) as NonNullable<U>);
-}
-
-export function toMaybe<T>(val?: T | undefined | null): Maybe<T> {
-  const value: Maybe<T>["value"] =
-    val === undefined || val === null ? nothing : toJust(val);
-  const isJust = value._type === "just";
-
-  return {
-    value,
-    run: <U>(fn: (val: T) => U) => run(value, fn),
-    get: <U extends NonNullable<T[K]>, K extends keyof T = keyof T>(key: K) =>
-      run<T, U>(value, (v) => v[key] as U),
-    unwrap: () => {
-      if (isJust) return value.value;
-      throw Error("No value to unwrap");
-    },
-    unwrapExpect: (msg: string) => {
-      if (isJust) return value.value;
-      throw Error(msg);
-    },
-    unwrapOr: (fallback: T) => (isJust ? value.value : fallback),
-    unwrapUndef: () => (isJust ? value.value : undefined),
-    isJust: () => isJust,
-    isNothing: () => !isJust,
-  };
+export function maybe<T>(val?: T | null) {
+  return new Maybe<T>(val || undefined);
 }
