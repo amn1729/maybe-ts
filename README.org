@@ -1,0 +1,68 @@
+* About
+Maybe monad for TS
+Inspired from Haskell's Maybe and Rust's Option type
+* Upstream URL
+https://codeberg.org/anhsirk0/maybe-ts
+* Maybe<T>
+  - data [private] : Just<T> | Nothing
+  - isJust [getter] : () => boolean
+  - isNothing [getter] : () => boolean
+  - run [method] : <U>(fn: (val: T) => U) => Maybe<NonNullable<U>>
+  - prop [method] : <U extends NonNullable<T[K]>, K extends keyof T>(key: K) => Maybe<U>
+  - get [method] : (msg?: string) => T
+  - getOr [method] : (fallback: T) => T
+  - getOrUndef [method] : () => T | undefined
+  - or [method] : (other?: Maybe<T>) => Maybe<T>
+* Types and functions
+** Just<T>
+  - value: T
+  - _t: "just"
+** Nothing
+  - _t: "nothing"
+** maybe<T>(val?: T | undefined | null) => Maybe<T>
+* Examples
+#+BEGIN_SRC typescript
+type User = { name: string; age: number; };
+let ben: Maybe<User> = maybe<User>({ name: "Ben" age: 10 });
+let benWithDoubleAge: Maybe<User> = ben.run(b => { ...b, age: b.age * 2 });
+let finalAge: Maybe<number> = benWithDoubleAge.run(b => b.age);
+let finalAgeValue: number = finalAge.getOr(0); //=> 20 or 0;  
+#+END_SRC
+#+BEGIN_SRC typescript
+type User = { name: string; age: number; };
+let ben: Maybe<User> = maybe<User>({ name: "Ben" age: 10 });
+let benWithDoubleAge: Maybe<User> = ben.run(b => { ...b, age: b.age * 2 });
+let finalAge: Maybe<number> = benWithDoubleAge.prop("age");
+let finalAgeValue: number = finalAge.getOr(0); //=> 20 or 0;  
+#+END_SRC
+#+BEGIN_SRC typescript
+let num: Maybe<number> = maybe<number>(); // Maybe of variant Nothing;
+let num2: Maybe<number> = maybe<number>(1); // Maybe of variant Just(1);
+let arrayOfNums: Array<number> = [1, 2, 3];
+let numAtIndex4: Maybe<number> = maybe(arrayOfNums.at(4));
+#+END_SRC
+** handling optional props
+#+BEGIN_SRC typescript
+type User = { name: string; age: number; address?: string };
+let ben: Maybe<User> = maybe<User>({ name: "Ben" age: 10 });
+let address: Maybe<string> = ben.prop("address");
+// let addressValue: string = address.get(); //=> throws Error("No value to unwrap");
+let addressValue: string = address.getOr("Not found"); //=> "Not found"  
+#+END_SRC
+** getting deeply nested props
+#+BEGIN_SRC typescript
+type Email = { usermail: string; domain: string };
+type Info = { phone?: number; email?: Email }
+type User = { name: string; info?: Info };
+
+let peter: Maybe<User> = maybe<User>({ name: "Peter Griffin" }); // No info
+let emailDomain: Maybe<string> = peter.prop("info").prop("email").prop("domain");
+emailDomain.isNothing() //=> true;
+
+let email: Email = { usermail: "stew", domain: "griffins.com" };
+let stewie: Maybe<User> = maybe<User>({ name: "Stewie Griffin", info: { email } });
+emailDomain: Maybe<string> = stewie.prop("info").prop("email").prop("domain");
+emailDomain.isJust //=> true;
+emailDomain.get() //=> "griffins.com"
+#+END_SRC
+
